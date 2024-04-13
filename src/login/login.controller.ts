@@ -49,7 +49,7 @@ export class LoginController {
               return {
                     message: 'Login correcto',
                     status: 200,
-
+                    token: datos.id_usuario
                   } 
             }
             else

@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, CreateCitaDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { ValidarLogin } from './dto/ValidLoginDto-auth';
 
 @Controller('auth')
 export class AuthController {
@@ -12,7 +11,11 @@ export class AuthController {
   create(@Body() createAuthDto: CreateAuthDto) {
     return this.authService.create(createAuthDto);
   }
-
+  @Post('citas/:id')
+  addCitas(@Body() data: CreateCitaDto,@Param('id')id:string){
+    console.log(id);
+    return this.authService.addCitas(data,parseInt(id));
+  }
   @Get()
   findAll() {
     return this.authService.findAll();
@@ -23,15 +26,37 @@ export class AuthController {
     return this.authService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
+  @Patch(':email')
+  update(@Param('email') email: string, @Body() updateAuthDto: CreateAuthDto) {
+    return this.authService.update(email, updateAuthDto);
+  }
+  @Patch('perfil/:id')
+  updateById(@Param('id') id: string, @Body() updateAuthDto: CreateAuthDto) {
+    return this.authService.updateById(parseInt(id), updateAuthDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.authService.remove(+id);
   }
+  @Get('user/:id')
+  getUserById(@Param('id') id:string){
+    return this.authService.getUserById(id)
+  }
 
+  @Get('user/:id/citas')
+  getAllCitasByUserId(@Param('id') id: string) {
+    return this.authService.getAllCitasByUserId(id);
+  }
+  @Get('informacion/:id')
+  getInformacionById(@Param('id') id:string){
+    return this.authService.getInformacionById(id)
+  }
+
+  @Get('preguntas')
+  async getAllPreguntas() {
+    return this.authService.getAllPreguntas();
+  }
   
+ 
 }
