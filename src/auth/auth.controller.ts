@@ -54,9 +54,7 @@ export class AuthController {
   }
 
   @Get('preguntas')
-  async getAllPreguntas() {
+  getAllPreguntas() {
     return this.authService.getAllPreguntas();
   }
-  
- 
 }

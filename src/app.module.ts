@@ -11,14 +11,14 @@ import { RecuperarPassModule } from './recuperar-pass/recuperar-pass.module';
   imports: [
     TypeOrmModule.forRoot({
     type: 'mysql',
-    host: 'localhost',//roundhouse.proxy.rlwy.net
-    port: 3306,
+    host: 'roundhouse.proxy.rlwy.net',
+    port: 33348,
     username: 'root',
-    password: '',
-    database: 'db_clinica_avance',
+    password: 'g2Eae1hhf2EFFc-eea2FGFc5ch4h1Deh',
+    database: 'railway',
     entities: [__dirname + '/**/*.entity{.ts,.js}'],
     synchronize: true,
-  }), AuthModule, EmailModule, LoginModule, RecuperarPassModule,],
+  }), AuthModule, EmailModule, LoginModule,],
   controllers: [AppController],
   providers: [AppService],
 })
