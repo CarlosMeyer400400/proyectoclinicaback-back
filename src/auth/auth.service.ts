@@ -9,7 +9,6 @@ import { ValidarLogin } from './dto/ValidLoginDto-auth';
 import { CreateCitasDto } from './dto/create-cita.dto';
 import { CreateInformacionDto } from './dto/create-informacion.dto';
 import { CreatePreguntasDto } from './dto/create-preguntas.dto';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,7 +18,6 @@ export class AuthService {
     private citaRepository: Repository<Cita>,
     @InjectRepository(Informacion)
     private informacionRepository: Repository<Informacion>,
-    
     @InjectRepository(Preguntas)
     private preguntasRepository: Repository<Preguntas>,
 
@@ -40,6 +38,8 @@ export class AuthService {
         status:HttpStatus.OK
       }
   }
+
+  
   async update(email: string, updateAuthDto: CreateAuthDto) {
     const {contrasena,...data} = updateAuthDto;
     const foundUser = await this.authRepository.findOne({
@@ -118,13 +118,13 @@ export class AuthService {
     });
     return{
       nombre: userFound.nombre,
-      apellidoP: userFound.apellidop,
-      apellidoM: userFound.apellidom,
-      fechaNacimiento:userFound.fecha,
+      apellidop: userFound.apellidop,
+      apellidom: userFound.apellidom,
+      fecha:userFound.fecha,
       sexo: userFound.sexo,
       telefono: userFound.telefono,
-      correo: userFound.email,
-      usuario: userFound.nombreu
+      email: userFound.email,
+      nombreu: userFound.nombreu
     }
   }
   
@@ -139,7 +139,7 @@ export class AuthService {
     return citas;
   }
 
-
+///informacion
   async getInformacionById(id:string){
     const informacionFound = await this.informacionRepository.findOne({
       where:{
@@ -152,14 +152,106 @@ export class AuthService {
       quienessomos: informacionFound.quienessomos,
     };
   }
+  ////
+
+  async updateInformacionById(id: string, updateInformacionDto: CreateInformacionDto) {
+    const informacionToUpdate = await this.informacionRepository.findOne({
+      where: {
+        id_informacion: parseInt(id)
+      }
+    });
   
-  async getAllPreguntas() {
-    const preguntasFound = await this.preguntasRepository.find();
-    return preguntasFound;
+    if (!informacionToUpdate) {
+      // Manejar el caso en que no se encuentra la información con el ID proporcionado
+      return {
+        message: 'La información no fue encontrada',
+        status: HttpStatus.NOT_FOUND
+      };
+    }
+  
+    const updatedInformacion = await this.informacionRepository.merge(informacionToUpdate, updateInformacionDto);
+    await this.informacionRepository.save(updatedInformacion);
+  
+    return {
+      message: 'Información actualizada correctamente',
+      status: HttpStatus.OK
+    };
+  }
+
+  
+  ///preguntas
+  async getPreguntas(){
+    const preguntasFound = await this.preguntasRepository.find()
+    return preguntasFound
+  }
+  ////
+  async updatePreguntasById(id: string, updatePreguntasDto: CreatePreguntasDto) {
+    const preguntasToUpdate = await this.preguntasRepository.findOne({
+      where: {
+        id_preguntas: parseInt(id)
+      }
+    });
+
+    if (!preguntasToUpdate) {
+      // Manejar el caso en que no se encuentra la pregunta con el ID proporcionado
+      return {
+        message: 'La pregunta no fue encontrada',
+        status: HttpStatus.NOT_FOUND
+      };
+    }
+
+    const updatedPreguntas = await this.preguntasRepository.merge(preguntasToUpdate, updatePreguntasDto);
+    await this.preguntasRepository.save(updatedPreguntas);
+
+    return {
+      message: 'Pregunta actualizada correctamente',
+      status: HttpStatus.OK
+    };
+  }
+  /////
+  async createPreguntas(createPreguntasDto: CreatePreguntasDto) {
+    const nuevaPregunta = this.preguntasRepository.create(createPreguntasDto);
+    await this.preguntasRepository.save(nuevaPregunta);
+    return {
+      message: 'Pregunta creada correctamente',
+      status: HttpStatus.CREATED
+    };
+  }
+/////
+  async deletePregunta(id: number) {
+    const preguntaExistente = await this.preguntasRepository.findOne({ where: { id_preguntas: id } });
+    if (!preguntaExistente) {
+      return {
+        message: 'La pregunta no fue encontrada',
+        status: HttpStatus.NOT_FOUND,
+      };
+    }
+    await this.preguntasRepository.remove(preguntaExistente);
+    return {
+      message: 'Pregunta eliminada correctamente',
+      status: HttpStatus.OK,
+    };
+  }
+////////usuarios
+  async getAuth(){
+    const AuthFound = await this.authRepository.find()
+    return AuthFound
+  }
+
+  async deleteUser(email: string) {
+    const userToDelete = await this.authRepository.findOne({ where: { email } });
+    if (!userToDelete) {
+      throw new Error('Usuario no encontrado');
+    }
+    await this.authRepository.remove(userToDelete);
+    return { message: 'Usuario eliminado correctamente' };
   }
   
-  
-  
+ ///////////
+ async getCita(){
+  const citaFound = await this.citaRepository.find()
+  return citaFound
+}
 
 }
 
