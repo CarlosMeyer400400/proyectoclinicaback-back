@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm"; 
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { Logs } from "./logs.entity";
+
+// Entidades
+
 @Entity({ name: 'usuarios' })
 export class Auth {
     @PrimaryGeneratedColumn()
@@ -45,10 +48,9 @@ export class Auth {
     citas: Cita[];
 
     @OneToMany(() => Logs, logs => logs.usuario)
-    logs:Logs[];
+    logs: Logs[];
 }
 
-//--------------------
 @Entity({ name: 'servicios' })
 export class Servicios {
     @PrimaryGeneratedColumn()
@@ -64,17 +66,15 @@ export class Servicios {
     descripcion: string;
 
     @Column()
-    imagen:string;
- 
+    imagen: string;
 }
-//--------------------
 
 @Entity({ name: 'citas' })
 export class Cita {
     @PrimaryGeneratedColumn()
     id_cita: number;
 
-    @Column({ type: "date",nullable:true })
+    @Column({ type: "date", nullable: true })
     fecha: Date;
 
     @Column({ type: "time" })
@@ -86,12 +86,10 @@ export class Cita {
     @Column()
     dentista: string;
 
-    @ManyToOne(() => Auth, auth => auth.citas) 
-    @JoinColumn({ name: "id_usuario" })  
+    @ManyToOne(() => Auth, auth => auth.citas)
+    @JoinColumn({ name: "id_usuario" })
     usuario: Auth;
-
 }
-
 
 @Entity({ name: 'informacion' })
 export class Informacion {
@@ -107,7 +105,6 @@ export class Informacion {
     @Column({ type: 'text' })
     quienessomos: string;
 }
-
 
 @Entity({ name: 'preguntas' })
 export class Preguntas {

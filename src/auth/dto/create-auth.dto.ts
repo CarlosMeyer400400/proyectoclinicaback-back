@@ -11,33 +11,40 @@ export class CreateAuthDto {
     telefono: string;
     pregunta: string;
     respuesta: string;
-    ip:string;
-    fecha_log?:string;
+    ip: string;
+    fecha_log?: string;
 }
-export class CreateCitaDto {
+
+export class CreateCitasDto {
     id_cita: number;
-    fecha?: Date | null;
+    fecha: Date;
     hora: string;
+    motivo: string;
     dentista: string;
-    id_usuario: number;
+    usuario?: {
+        id_usuario: number;
+        nombre: string;
+        apellidop: string;
+        apellidom: string;
+    };
 }
-export class CreateInformacionDto{
+
+export class CreateInformacionDto {
     id_informacion: number;
     quienessomos: string;
     vision: string;
     mision: string;
 }
 
-export class CreatePreguntasDto{  
+export class CreatePreguntasDto {
     id_preguntas: number;
     preguntas: string;
     respuestas: string;
 }
 
-export class CreateServiciosDto{  
+export class CreateServiciosDto {
     id_servicio: number;
     nombre: string;
     costo: string;
     descripcion: string;
 }
-

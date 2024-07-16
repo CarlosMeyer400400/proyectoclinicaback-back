@@ -1,12 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateAuthDto, CreateCitaDto} from './dto/create-auth.dto';
+import { CreateAuthDto, CreateCitasDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Auth, Cita, Informacion, Preguntas, Servicios } from './entities/auth.entity';
 import * as bcryptjs from 'bcryptjs';
 import { ValidarLogin } from './dto/ValidLoginDto-auth';
-import { CreateCitasDto } from './dto/create-cita.dto';
 import { CreateInformacionDto } from './dto/create-informacion.dto';
 import { CreatePreguntasDto } from './dto/create-preguntas.dto';
 import { CreateServiciosDto } from './dto/create-servicios.dto';
@@ -15,7 +14,6 @@ import { Logs } from './entities/logs.entity';
 import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
-
 
 import * as cloudinary from 'cloudinary';
 
@@ -42,6 +40,7 @@ export class AuthService {
     private logsRepository: Repository<Logs>,
   ) {}
 
+  // Crear un nuevo usuario
   create(createAuthDto: CreateAuthDto) {
     const { contrasena, ...resultado } = createAuthDto;
     const newuser = this.authRepository.create({
@@ -51,6 +50,7 @@ export class AuthService {
     return this.authRepository.save(newuser);
   }
 
+  // Actualizar usuario por ID
   async updateById(id: number, updateAuthDto: UpdateAuthDto) {
     const foundUser = await this.authRepository.findOne({ where: { id_usuario: id } });
     if (!foundUser) {
@@ -76,6 +76,7 @@ export class AuthService {
     };
   }
 
+  // Actualizar contraseña de usuario
   async updatePassword(email: string, data: { contrasena: string, ip: string, fecha: string }) {
     const foundUser = await this.authRepository.findOne({ where: { email: email } });
     if (!foundUser) {
@@ -102,6 +103,7 @@ export class AuthService {
     };
   }
 
+  // Actualizar usuario por correo electrónico
   async update(email: string, updateAuthDto: UpdateAuthDto) {
     const { contrasena, ...data } = updateAuthDto;
     const foundUser = await this.authRepository.findOne({ where: { email: email } });
@@ -125,29 +127,35 @@ export class AuthService {
     };
   }
 
+  // Validar login del usuario
   async validLogin(createLoginDto: ValidarLogin): Promise<boolean> {
     const data = await this.getUser(createLoginDto.email);
     if (!data) return false;
     return bcryptjs.compare(createLoginDto.contrasena, data.contrasena);
   }
 
+  // Obtener todos los usuarios
   findAll() {
     return this.authRepository.find();
   }
 
+  // Obtener un usuario por ID
   findOne(id: string) {
     return this.authRepository.findOne({ where: { email: id } });
   }
 
+  // Eliminar un usuario por ID
   remove(id: number) {
     return this.authRepository.delete({ id_usuario: id });
   }
 
+  // Obtener un usuario por correo electrónico
   getUser(email: string) {
     return this.authRepository.findOne({ where: { email: email } });
   }
 
-  async addCitas(data: CreateCitaDto, id: number) {
+  // Agregar cita a un usuario
+  async addCitas(data: CreateCitasDto, id: number) {
     const getUser = await this.authRepository.findOne({ where: { id_usuario: id } });
     if (!getUser) {
       return {
@@ -160,6 +168,13 @@ export class AuthService {
     return { message: "Cita creada con éxito", status: HttpStatus.OK };
   }
 
+  // Obtener el número total de citas
+  async countCitas(): Promise<number> {
+    const count = await this.citaRepository.count();
+    return count;
+  }
+
+  // Obtener usuario por ID
   async getUserById(id: string) {
     const userFound = await this.authRepository.findOne({ where: { id_usuario: parseInt(id) } });
     if (!userFound) {
@@ -180,11 +195,13 @@ export class AuthService {
     };
   }
 
+  // Obtener todas las citas de un usuario por ID de usuario
   async getAllCitasByUserId(userId: string) {
     const citas = await this.citaRepository.find({ where: { usuario: { id_usuario: parseInt(userId) } } });
     return citas;
   }
 
+  // Obtener información por ID
   async getInformacionById(id: string) {
     const informacionFound = await this.informacionRepository.findOne({ where: { id_informacion: parseInt(id) } });
     if (!informacionFound) {
@@ -200,6 +217,7 @@ export class AuthService {
     };
   }
 
+  // Actualizar información por ID
   async updateInformacionById(id: string, updateInformacionDto: CreateInformacionDto) {
     const informacionToUpdate = await this.informacionRepository.findOne({ where: { id_informacion: parseInt(id) } });
     if (!informacionToUpdate) {
@@ -216,11 +234,13 @@ export class AuthService {
     };
   }
 
+  // Obtener todas las preguntas
   async getPreguntas() {
     const preguntasFound = await this.preguntasRepository.find();
     return preguntasFound;
   }
 
+  // Actualizar pregunta por ID
   async updatePreguntasById(id: string, updatePreguntasDto: CreatePreguntasDto) {
     const preguntasToUpdate = await this.preguntasRepository.findOne({ where: { id_preguntas: parseInt(id) } });
     if (!preguntasToUpdate) {
@@ -237,6 +257,7 @@ export class AuthService {
     };
   }
 
+  // Crear nueva pregunta
   async createPreguntas(createPreguntasDto: CreatePreguntasDto) {
     const nuevaPregunta = this.preguntasRepository.create(createPreguntasDto);
     await this.preguntasRepository.save(nuevaPregunta);
@@ -246,6 +267,7 @@ export class AuthService {
     };
   }
 
+  // Eliminar pregunta por ID
   async deletePregunta(id: number) {
     const preguntaExistente = await this.preguntasRepository.findOne({ where: { id_preguntas: id } });
     if (!preguntaExistente) {
@@ -261,11 +283,13 @@ export class AuthService {
     };
   }
 
+  // Obtener todos los usuarios
   async getAuth() {
     const AuthFound = await this.authRepository.find();
     return AuthFound;
   }
 
+  // Eliminar usuario por correo electrónico
   async deleteUser(email: string) {
     const userToDelete = await this.authRepository.findOne({ where: { email } });
     if (!userToDelete) {
@@ -275,11 +299,14 @@ export class AuthService {
     return { message: 'Usuario eliminado correctamente' };
   }
 
-  async getCita() {
-    const citaFound = await this.citaRepository.find();
-    return citaFound;
-  }
+  // Obtener todas las citas
+async getCita() {
+  const citaFound = await this.citaRepository.find({ relations: ['usuario'] });
+  return citaFound;
+}
 
+
+  // Crear logs de acciones del usuario
   async crearLogs(data: { accion: string, ip: string, url_solicitada: string, status: number, fecha: string }, email: string) {
     const userFound = await this.authRepository.findOne({ where: { email: email } });
     if (!userFound) {
@@ -295,13 +322,13 @@ export class AuthService {
     await this.logsRepository.save(newLog);
   }
 
-  async createServicio(createServiciosDto: CreateServiciosDto,file:{imagen?:Express.Multer.File[]}) {
-
+  // Crear un nuevo servicio con imagen
+  async createServicio(createServiciosDto: CreateServiciosDto, file: { imagen?: Express.Multer.File[] }) {
     const filePath = path.join(os.tmpdir(), file.imagen[0].originalname);
-    fs.writeFileSync(filePath,file.imagen[0].buffer);
-    const result = cloudinary.v2.uploader.upload(filePath,{
-      folder:'imagenes-servicios',
-      resource_type:'image'
+    fs.writeFileSync(filePath, file.imagen[0].buffer);
+    const result = cloudinary.v2.uploader.upload(filePath, {
+      folder: 'imagenes-servicios',
+      resource_type: 'image'
     });
     const newServicio = this.serviciosRepository.create({
       imagen: (await result).secure_url,
@@ -313,63 +340,60 @@ export class AuthService {
       status: HttpStatus.CREATED,
     };
   }
-//SERVICIOS
 
-async getServicios() {
-  const ServiciosFound = await this.serviciosRepository.find();
-  return ServiciosFound;
-}
+  // Obtener todos los servicios
+  async getServicios() {
+    const ServiciosFound = await this.serviciosRepository.find();
+    return ServiciosFound;
+  }
 
+  // Obtener todos los servicios
+  async findAllServicios() {
+    return this.serviciosRepository.find();
+  }
 
-async findAllServicios() {
-  return this.serviciosRepository.find();
-}
+  // Obtener un servicio por ID
+  async findOneServicio(id: number) {
+    const servicio = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
+    if (!servicio) {
+      return {
+        message: 'Servicio no encontrado',
+        status: HttpStatus.NOT_FOUND,
+      };
+    }
+    return servicio; 
+  }
 
-async findOneServicio(id: number) {
-  const servicio = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
-  if (!servicio) {
+  // Actualizar un servicio por ID
+  async updateServicio(id: number, updateServiciosDto: CreateServiciosDto) {
+    const servicioToUpdate = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
+    if (!servicioToUpdate) {
+      return {
+        message: 'Servicio no encontrado',
+        status: HttpStatus.NOT_FOUND,
+      };
+    }
+    const updatedServicio = this.serviciosRepository.merge(servicioToUpdate, updateServiciosDto);
+    await this.serviciosRepository.save(updatedServicio);
     return {
-      message: 'Servicio no encontrado',
-      status: HttpStatus.NOT_FOUND,
+      message: 'Servicio actualizado correctamente',
+      status: HttpStatus.OK,
     };
   }
-  return servicio; 
-}
 
-async updateServicio(id: number, updateServiciosDto: CreateServiciosDto) {
-  const servicioToUpdate = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
-  if (!servicioToUpdate) {
+  // Eliminar un servicio por ID
+  async removeServicio(id: number) {
+    const servicioToDelete = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
+    if (!servicioToDelete) {
+      return {
+        message: 'Servicio no encontrado',
+        status: HttpStatus.NOT_FOUND,
+      };
+    }
+    await this.serviciosRepository.remove(servicioToDelete);
     return {
-      message: 'Servicio no encontrado',
-      status: HttpStatus.NOT_FOUND,
+      message: 'Servicio eliminado correctamente',
+      status: HttpStatus.OK,
     };
   }
-  const updatedServicio = this.serviciosRepository.merge(servicioToUpdate, updateServiciosDto);
-  await this.serviciosRepository.save(updatedServicio);
-  return {
-    message: 'Servicio actualizado correctamente',
-    status: HttpStatus.OK,
-  };
-}
-
-async removeServicio(id: number) {
-  const servicioToDelete = await this.serviciosRepository.findOne({ where: { id_servicio: id } });
-  if (!servicioToDelete) {
-    return {
-      message: 'Servicio no encontrado',
-      status: HttpStatus.NOT_FOUND,
-    };
-  }
-  await this.serviciosRepository.remove(servicioToDelete);
-  return {
-    message: 'Servicio eliminado correctamente',
-    status: HttpStatus.OK,
-  };
-}
-
-//numero de citas
-async countCitas(): Promise<number> {
-  const count = await this.citaRepository.count();
-  return count;
-}
 }
