@@ -10,14 +10,14 @@ import { RecuperarPassModule } from './recuperar-pass/recuperar-pass.module';
 @Module({
   imports: [
         //TypeOrmModule.forRoot({
-        //type: 'mysql',
-        //host: 'localhost',//roundhouse.proxy.rlwy.net
-        //port: 3306,
-        //username: 'root',
-        //password: '',
-        //database: 'db_clinica_avance',
-        //entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        //synchronize: true,
+         //type: 'mysql',
+         //host: 'localhost',//roundhouse.proxy.rlwy.net
+         //port: 3306,
+         //username: 'root',
+         //password: '',
+         //database: 'db_clinica_avance',
+         //entities: [__dirname + '/**/*.entity{.ts,.js}'],
+         //synchronize: true,
         TypeOrmModule.forRoot({
         type: 'mysql',
         host: 'monorail.proxy.rlwy.net',

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto, CreateCitasDto, CreateInformacionDto, CreatePreguntasDto, CreateServiciosDto } from './dto/create-auth.dto';
+import { CreateAuthDto, CreateCitasDto, CreateInformacionDto, CreatePreguntasDto, CreateServiciosDto, CreateContactoDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
@@ -20,6 +20,8 @@ export class AuthController {
   addCitas(@Body() data: CreateCitasDto, @Param('id') id: string) {
     return this.authService.addCitas(data, parseInt(id));
   }
+
+
   // Obtener todos los usuarios
   @Get()
   findAll() {
@@ -132,6 +134,8 @@ export class AuthController {
     })));
   }
 
+
+
   // Servicios
   // Obtener servicios
   @Get('servicios/:data')
@@ -177,4 +181,43 @@ export class AuthController {
   async getTotalCitas(): Promise<number> {
     return this.authService.countCitas();
   }
+  
+  // Obtener cita por fecha
+  @Get('citas/fecha/:fecha')
+getCitasPorFecha(@Param('fecha') fecha: string) {
+  const fechaBusqueda = new Date(fecha);
+  return this.authService.getCitasPorFecha(fechaBusqueda);
+}
+
+//---------------------------------
+// Preguntas
+  // Obtener contacto
+  @Get('contacto/:data')
+  getContacto(@Param('data') data: string) {
+    return this.authService.getContacto();
+  }
+
+  // Actualizar contacto por ID
+  @Patch('contacto/:id')
+  updateContactoById(@Param('id') id: string, @Body() updateContactoDto: CreateContactoDto) {
+    return this.authService.updateContactoById(id, updateContactoDto);
+  }
+
+  // Crear nuevas contacto
+  @Post('contacto')
+  createContacto(@Body() createContactoDto: CreateContactoDto) {
+    return this.authService.createContacto(createContactoDto);
+  }
+
+  // Eliminar contacto por ID
+  @Delete('contacto/:id')
+  deleteContacto(@Param('id') id: string) {
+    return this.authService.deleteContacto(parseInt(id));
+  }
+
+
+
+
+
+
 }

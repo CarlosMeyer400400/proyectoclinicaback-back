@@ -3,12 +3,14 @@ import { CreateAuthDto, CreateCitasDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth, Cita, Informacion, Preguntas, Servicios } from './entities/auth.entity';
+import { Auth, Cita, Informacion, Preguntas, Servicios, Contacto } from './entities/auth.entity';
 import * as bcryptjs from 'bcryptjs';
 import { ValidarLogin } from './dto/ValidLoginDto-auth';
 import { CreateInformacionDto } from './dto/create-informacion.dto';
 import { CreatePreguntasDto } from './dto/create-preguntas.dto';
 import { CreateServiciosDto } from './dto/create-servicios.dto';
+import { CreateContactoDto } from './dto/create-auth.dto';
+
 import { Logs } from './entities/logs.entity';
 
 import * as path from 'path';
@@ -36,6 +38,8 @@ export class AuthService {
     private preguntasRepository: Repository<Preguntas>,
     @InjectRepository(Servicios)
     private serviciosRepository: Repository<Servicios>,
+    @InjectRepository(Contacto)
+    private contactoRepository: Repository<Contacto>,
     @InjectRepository(Logs)
     private logsRepository: Repository<Logs>,
   ) {}
@@ -173,6 +177,7 @@ export class AuthService {
     const count = await this.citaRepository.count();
     return count;
   }
+
 
   // Obtener usuario por ID
   async getUserById(id: string) {
@@ -396,4 +401,71 @@ async getCita() {
       status: HttpStatus.OK,
     };
   }
+  // Obtener citas por fecha específica
+async getCitasPorFecha(fecha: Date) {
+  const citas = await this.citaRepository.find({ where: { fecha: fecha }, relations: ['usuario'] });
+  return citas;
+}
+
+// Obtener citas por fecha y hora específica
+async getCitasPorFechaYHora(fecha: Date, hora: string) {
+  const citas = await this.citaRepository.find({
+    where: {
+      fecha: fecha,
+      hora: hora,
+    },
+    relations: ['usuario'],
+  });
+  return citas;
+}
+
+
+// Obtener todos los contactos
+async getContacto() {
+  const contactoFound = await this.contactoRepository.find();
+  return contactoFound;
+}
+
+// Actualizar contacto por ID
+async updateContactoById(id: string, updateContactoDto: CreateContactoDto) {
+  const contactoToUpdate = await this.contactoRepository.findOne({ where: { id_contacto: parseInt(id) } });
+  if (!contactoToUpdate) {
+    return {
+      message: 'El contacto no fue encontrado',
+      status: HttpStatus.NOT_FOUND
+    };
+  }
+  const updatedContacto = this.contactoRepository.merge(contactoToUpdate, updateContactoDto);
+  await this.contactoRepository.save(updatedContacto);
+  return {
+    message: 'Contacto actualizado correctamente',
+    status: HttpStatus.OK
+  };
+}
+
+// Crear nuevo contacto
+async createContacto(createContactoDto: CreateContactoDto) {
+  const nuevoContacto = this.contactoRepository.create(createContactoDto);
+  await this.contactoRepository.save(nuevoContacto);
+  return {
+    message: 'Contacto creado correctamente',
+    status: HttpStatus.CREATED
+  };
+}
+
+// Eliminar contacto por ID
+async deleteContacto(id: number) {
+  const contactoExistente = await this.contactoRepository.findOne({ where: { id_contacto: id } });
+  if (!contactoExistente) {
+    return {
+      message: 'El contacto no fue encontrado',
+      status: HttpStatus.NOT_FOUND
+    };
+  }
+  await this.contactoRepository.remove(contactoExistente);
+  return {
+    message: 'Contacto eliminado correctamente',
+    status: HttpStatus.OK
+  };
+}
 }

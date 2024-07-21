@@ -117,3 +117,18 @@ export class Preguntas {
     @Column()
     respuestas: string;
 }
+
+@Entity({ name: 'contacto' })
+export class Contacto {
+    @PrimaryGeneratedColumn()
+    id_contacto: number;
+
+    @Column()
+    nombre: string;
+
+    @Column()
+    email: string;
+
+    @Column()
+    mensaje: string;
+}
