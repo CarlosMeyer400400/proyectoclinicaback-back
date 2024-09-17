@@ -22,7 +22,7 @@ export class LoginController {
       if(datos === null) throw new Error("error")
 
       this.intento = datos.intentos;
-      if(this.intento === 5){  
+      if(this.intento === 50){  
         return {
         message: 'Numero de maxinmo de intentos alcanzado',
         status: HttpStatus.CONFLICT,
@@ -32,7 +32,7 @@ export class LoginController {
       {
         this.intento++;
         this.loginService.asignarIntentos(datos.id_usuario,this.intento)
-          if(this.intento >= 5)
+          if(this.intento >= 50)
           {
             console.log("la de abajo")
             this.loginService.resetearIntentos(datos.id_usuario)
