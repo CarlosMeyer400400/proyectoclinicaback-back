@@ -4,17 +4,17 @@ import { Auth } from "./auth.entity";
 @Entity('logs')
 export class Logs{
     @PrimaryGeneratedColumn()
-    id: number;
+    id?: number;
     @Column()
-    accion:string;
+    accion?:string;
     @Column()
-    ip:string;
+    ip?:string;
     @Column()
-    url_solicitada:string;
+    url_solicitada?:string;
     @Column()
-    status:number;
+    status?:number;
     @Column()
-    fecha: string;
+    fecha?: string;
 
     @ManyToOne(()=>Auth,auth => auth.logs)
     usuario:Auth;
