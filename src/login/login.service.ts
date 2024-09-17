@@ -38,7 +38,7 @@ export class LoginService {
         "UPDATE usuarios SET intentos = 0 WHERE id_usuario = " + id + ""
       )
       console.log("Intentos reseteados")
-    }, 3000)
+    }, 300)
   }
 
  async crearLogs(data:{accion:string,ip:string,url_solicitada:string,status:number,fecha:string},email:string){
