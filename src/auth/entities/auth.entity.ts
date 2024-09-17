@@ -41,6 +41,9 @@ export class Auth {
     @Column()
     respuesta: string;
 
+    @Column({ default: 'user' })
+    rol: string;
+
     @Column({ nullable: true })
     intentos?: number | null;
 
