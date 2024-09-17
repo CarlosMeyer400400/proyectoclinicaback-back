@@ -12,7 +12,7 @@ export class CreateAuthDto {
     pregunta: string;
     respuesta: string;
     rol: string;
-    ip: string;
+    ip?: string;
     fecha_log?: string;
 }
 
