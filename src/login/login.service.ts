@@ -41,16 +41,22 @@ export class LoginService {
     }, 300000)
   }
 
- async crearLogs(data:{accion:string,ip:string,url_solicitada:string,status:number,fecha:string},email:string){
-    const userFound =  await this.authRepository.findOne({
-      where: {
-        email: email
-      }
-    })
+  async crearLogs(data: { accion: string; ip?: string; url_solicitada: string; status: number; fecha: string }, email: string) {
+    const userFound = await this.authRepository.findOne({
+      where: { email: email }
+    });
+
+    // Si no hay IP proporcionada, será nula o tomará el valor por defecto de la base de datos
     const newLog = this.logsRepository.create({
-      usuario:userFound,
-      ...data
-    })
-    this.logsRepository.save(newLog)
-  }
+      usuario: userFound,
+      ip: data.ip || null, // Usa 'null' si la IP no está disponible
+      accion: data.accion,
+      url_solicitada: data.url_solicitada,
+      status: data.status,
+      fecha: data.fecha,
+    });
+
+    this.logsRepository.save(newLog);
+}
+
 }
