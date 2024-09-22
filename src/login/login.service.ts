@@ -41,7 +41,7 @@ export class LoginService {
     }, 300000)
   }
 
-  async crearLogs(data: { accion: string; ip?: string; url_solicitada: string; status: number; fecha: string }, email: string) {
+  async crearLogs(data: { accion: string; ip?: string; url_solicitada: string; status: number; fecha?: string }, email: string) {
     const userFound = await this.authRepository.findOne({
       where: { email: email }
     });
@@ -53,7 +53,7 @@ export class LoginService {
       accion: data.accion,
       url_solicitada: data.url_solicitada,
       status: data.status,
-      fecha: data.fecha,
+      fecha: data.fecha || null,
     });
 
     this.logsRepository.save(newLog);

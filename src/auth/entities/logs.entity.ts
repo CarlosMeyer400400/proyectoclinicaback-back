@@ -18,7 +18,7 @@ export class Logs {
     @Column()
     status?: number;
 
-    @Column()
+    @Column({ nullable: true }) // Permitir valores nulos para 'fecha'
     fecha?: string;
 
     @ManyToOne(() => Auth, auth => auth.logs)
