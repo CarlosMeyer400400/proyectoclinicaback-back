@@ -89,6 +89,9 @@ export class Cita {
     @Column()
     dentista: string;
 
+    @Column({ default: 'pendiente' })
+    estado: string;
+
     @ManyToOne(() => Auth, auth => auth.citas)
     @JoinColumn({ name: "id_usuario" })
     usuario: Auth;
