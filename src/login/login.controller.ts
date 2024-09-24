@@ -2,7 +2,6 @@ import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/commo
 import { LoginService } from './login.service';
 import { CreateLoginDto } from './dto/create-login.dto';
 import { AuthService } from 'src/auth/auth.service';
-import * as jwt from 'jsonwebtoken';
 
 @Controller('login')
 export class LoginController {
@@ -39,10 +38,6 @@ export class LoginController {
       
       if (isLoginValid) {
         await this.loginService.resetearIntentos(datos.id_usuario);
-        
-        // Genera un token JWT
-        const token = jwt.sign({ id: datos.id_usuario }, 'tu_clave_secreta', { expiresIn: '1h' });
-
         this.loginService.crearLogs({
           accion: 'Inicio de sesión',
           fecha: createLoginDto.fecha,
@@ -54,7 +49,7 @@ export class LoginController {
         return {
           message: 'Login correcto',
           status: 200,
-          token: token, // Usa el token JWT
+          token: datos.id_usuario,
         };
       } else {
         return {
