@@ -150,7 +150,9 @@ export class Feedback {
     @Column()
     respuesta: string;
 
+   // Hacer que el id_usuario sea único
     @ManyToOne(() => Auth, auth => auth.feedback)
     @JoinColumn({ name: "id_usuario" })
+    @Column({ unique: true })  // Hacemos único el id_usuario en la tabla feedback
     usuario: Auth;
 }
